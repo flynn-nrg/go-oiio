@@ -25,6 +25,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libopenimageio-dev
+        sudo apt-get install -y libfmt-dev
 
     - name: Build
       run: go build -v ./...
