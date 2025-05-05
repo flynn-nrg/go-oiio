@@ -14,7 +14,7 @@ import (
 	"image"
 	"unsafe"
 
-	"github.com/flynn-nrg/go-oiio/pkg/floatimage"
+	"github.com/flynn-nrg/floatimage/floatimage"
 )
 
 func ReadImage(filename string) (*floatimage.FloatNRGBA, error) {

@@ -34,7 +34,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/flynn-nrg/go-oiio/pkg/oiio"
+	"github.com/flynn-nrg/go-oiio/oiio"
 )
 
 func main() {
