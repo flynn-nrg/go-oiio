@@ -6,7 +6,7 @@
 ## Introduction
 This package provides Go bindings to read and write images using [OpenImageIO](https://openimageio.readthedocs.io)
 
-The image data is always in float64 format as the use case when building this was to allow [Izpi](https://github.com/flynn-nrg/izpi) to easily import texture assets in many different formats.
+The image data is always in [floatimage](https://github.com/flynn-nrg/floatimage) format as the use case when building this was to allow [Izpi](https://github.com/flynn-nrg/izpi) to easily import texture assets in many different formats.
 
 ## Building
 Use your package manager to install the following dependencies:
@@ -30,9 +30,7 @@ package main
 
 import (
 	"fmt"
-	"image/png"
 	"log"
-	"os"
 
 	"github.com/flynn-nrg/go-oiio/oiio"
 )
@@ -45,17 +43,7 @@ func main() {
 
 	fmt.Printf("image size: %d x %d\n", floatImage.Bounds().Dx(), floatImage.Bounds().Dy())
 
-	f, err := os.Create("test.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := png.Encode(f, floatImage); err != nil {
-		f.Close()
-		log.Fatal(err)
-	}
-
-	if err := f.Close(); err != nil {
+	if err := oiio.WriteImage("test.png", floatImage); err != nil {
 		log.Fatal(err)
 	}
 }
