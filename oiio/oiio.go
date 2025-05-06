@@ -24,17 +24,22 @@ func ReadImage(filename string) (*floatimage.FloatNRGBA, error) {
 	cFilename := C.CString(filename)
 	defer C.free(unsafe.Pointer(cFilename))
 
-	cImage := C.read_image(cFilename)
+	var errorMsg *C.char
+	cImage := C.read_image(cFilename, &errorMsg)
 	if cImage == nil {
-		return nil, errors.New("failed to read image")
+		if errorMsg != nil {
+			err := C.GoString(errorMsg)
+			C.free(unsafe.Pointer(errorMsg))
+			return nil, fmt.Errorf("failed to read image: %s", err)
+		}
+		return nil, fmt.Errorf("failed to read image")
 	}
+	defer C.free_image(cImage)
 
 	width := int(cImage.width)
 	height := int(cImage.height)
 	numChannels := int(cImage.channels)
 	cData := (*[1 << 30]C.float)(unsafe.Pointer(cImage.data))[: width*height*numChannels : width*height*numChannels]
-
-	defer C.free_image(cImage)
 
 	var data []float64
 
@@ -47,7 +52,11 @@ func ReadImage(filename string) (*floatimage.FloatNRGBA, error) {
 		return nil, fmt.Errorf("unsupported number of channels: %d", cImage.channels)
 	}
 
-	return floatimage.NewFloatNRGBA(image.Rectangle{image.Point{0, 0}, image.Point{width, height}}, data), nil
+	return &floatimage.FloatNRGBA{
+		Pix:    data,
+		Stride: width * numChannels,
+		Rect:   image.Rectangle{image.Point{0, 0}, image.Point{width, height}},
+	}, nil
 }
 
 // isHDR returns true if the file extension indicates an HDR format

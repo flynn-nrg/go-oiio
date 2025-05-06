@@ -3,12 +3,14 @@
 
 using namespace OIIO;
 
-Image *read_image(const char *filename) {
+Image *read_image(const char *filename, char **error_msg) {
   Image *image = new Image();
 
   auto inp = ImageInput::open(filename);
-  if (!inp)
+  if (!inp) {
+    *error_msg = strdup("Could not open image file");
     return nullptr;
+  }
 
   const ImageSpec &spec = inp->spec();
   int xres = spec.width;
@@ -21,9 +23,15 @@ Image *read_image(const char *filename) {
 
   image->data = new float[xres * yres * nchannels];
 
-  inp->read_image(0, 0, 0, nchannels, TypeDesc::FLOAT, image->data);
-  inp->close();
+  if (!inp->read_image(0, 0, 0, nchannels, TypeDesc::FLOAT, image->data)) {
+    *error_msg = strdup(inp->geterror().c_str());
+    delete[] image->data;
+    delete image;
+    inp->close();
+    return nullptr;
+  }
 
+  inp->close();
   return image;
 }
 
