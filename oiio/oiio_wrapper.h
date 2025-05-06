@@ -12,7 +12,7 @@ typedef struct Image {
   float *data;
 } Image;
 
-Image *read_image(const char *filename);
+Image *read_image(const char *filename, char **error_msg);
 void free_image(Image *image);
 
 // Returns 0 on success, non-zero error code on failure
