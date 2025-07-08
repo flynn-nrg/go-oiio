@@ -20,6 +20,10 @@ import (
 	"github.com/flynn-nrg/floatimage/floatimage"
 )
 
+const (
+	convertedNumChannels = 4
+)
+
 func ReadImage(filename string) (*floatimage.FloatNRGBA, error) {
 	cFilename := C.CString(filename)
 	defer C.free(unsafe.Pointer(cFilename))
@@ -52,11 +56,7 @@ func ReadImage(filename string) (*floatimage.FloatNRGBA, error) {
 		return nil, fmt.Errorf("unsupported number of channels: %d", cImage.channels)
 	}
 
-	return &floatimage.FloatNRGBA{
-		Pix:    data,
-		Stride: width * numChannels,
-		Rect:   image.Rectangle{image.Point{0, 0}, image.Point{width, height}},
-	}, nil
+	return floatimage.NewFloatNRGBA(image.Rect(0, 0, width, height), data), nil
 }
 
 // isHDR returns true if the file extension indicates an HDR format
