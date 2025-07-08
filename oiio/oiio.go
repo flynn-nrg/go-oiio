@@ -56,11 +56,7 @@ func ReadImage(filename string) (*floatimage.FloatNRGBA, error) {
 		return nil, fmt.Errorf("unsupported number of channels: %d", cImage.channels)
 	}
 
-	return &floatimage.FloatNRGBA{
-		Pix:    data,
-		Stride: width * convertedNumChannels,
-		Rect:   image.Rectangle{image.Point{0, 0}, image.Point{width, height}},
-	}, nil
+	return floatimage.NewFloatNRGBA(image.Rect(0, 0, width, height), data), nil
 }
 
 // isHDR returns true if the file extension indicates an HDR format
