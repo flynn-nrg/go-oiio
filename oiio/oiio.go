@@ -20,6 +20,10 @@ import (
 	"github.com/flynn-nrg/floatimage/floatimage"
 )
 
+const (
+	convertedNumChannels = 4
+)
+
 func ReadImage(filename string) (*floatimage.FloatNRGBA, error) {
 	cFilename := C.CString(filename)
 	defer C.free(unsafe.Pointer(cFilename))
@@ -54,7 +58,7 @@ func ReadImage(filename string) (*floatimage.FloatNRGBA, error) {
 
 	return &floatimage.FloatNRGBA{
 		Pix:    data,
-		Stride: width * numChannels,
+		Stride: width * convertedNumChannels,
 		Rect:   image.Rectangle{image.Point{0, 0}, image.Point{width, height}},
 	}, nil
 }
